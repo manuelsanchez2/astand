@@ -1,26 +1,22 @@
 <script lang="ts">
-	import { createSvelteStore } from '$lib/store.svelte.js';
-	import Foo from '../components/Foo.svelte';
-	import { counterStore } from '../stores/counterStore.svelte.js';
-
-	const counter = createSvelteStore(counterStore);
-
-	function increment() {
-		counterStore.increment();
-	}
-	function decrement() {
-		counterStore.decrement();
-	}
+	import Counter from '../components/Counter.svelte';
+	import Greeter from '../components/Greeter.svelte';
+	import Profile from '../components/Profile.svelte';
 </script>
 
-<h1>Welcome to your library project</h1>
-<p>Create your package using @sveltejs/package and preview/showcase your work with SvelteKit</p>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<main class="flex min-h-screen flex-col items-center justify-center">
+	<h1 class="text-4xl font-bold">Astand Tests</h1>
 
-<h1>Counter: {$counter.count}</h1>
-<button class="cursor-pointer border" onclick={increment}>Increment</button>
-<button onclick={decrement}>Decrement</button>
-
-<h3>Counter: {$counter.count}</h3>
-
-<Foo />
+	<section class="my-6 flex flex-col space-y-4 rounded-lg border-2 border-black p-4">
+		<h2>Simple: Counter</h2>
+		<Counter />
+	</section>
+	<section class="my-6 flex flex-col space-y-4 rounded-lg border-2 border-black p-4">
+		<h2>Simple: Greeter</h2>
+		<Greeter />
+	</section>
+	<section class="my-6 flex flex-col space-y-4 rounded-lg border-2 border-black p-4">
+		<h2>Simple: Profile</h2>
+		<Profile />
+	</section>
+</main>
