@@ -1,58 +1,140 @@
-# create-svelte
+# Astand 🚀
 
-Everything you need to build a Svelte library, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+A lightweight, reactive state management library for Svelte 5 with middleware support.
 
-Read more about creating a library [in the docs](https://svelte.dev/docs/kit/packaging).
+Inspired by the simplicity of Zustand and the power of Svelte’s reactive runes, this library provides a single‑file API to create global or scoped state stores—complete with middleware (like logging) and full TypeScript support.
 
-## Creating a project
+---
 
-If you're seeing this, you've probably already done this step. Congrats!
+## ✨ Features
 
-```bash
-# create a new project in the current directory
-npx sv create
+- **Reactive Stores:**  
+  Utilizes Svelte’s `$state` rune for fine‑grained reactivity.
+- **Middleware Support:**  
+  Easily plug in middleware to run on every state update (e.g. logging with `consoleLogMiddleware`).
+- **Singleton or Context:**  
+  Export your store as a singleton for global state or provide it via Svelte’s context API.
+- **Direct Svelte Store Contract:**  
+  Implements a `subscribe` method under the hood so you can directly use the store in your Svelte components (no extra wrappers required).
+- **TypeScript First:**  
+  Built with TypeScript to provide a fully typed API.
 
-# create a new project in my-app
-npx sv create my-app
-```
+---
 
-## Developing
+## 📦 Installation
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
-
-## Building
-
-To build your library:
+Install via npm (or your preferred package manager):
 
 ```bash
-npm run package
+npm install astand
+# or
+pnpm add astand
+# or
+yarn add astand
 ```
 
-To create a production version of your showcase app:
+## 🛠 Usage
 
-```bash
-npm run build
+### Creating a Store
+
+Use the `createStore` function to create a store with an initial state and optional middleware. For example, create a counter store that logs every state update:
+
+```ts
+// src/stores/counterStore.svelte.ts
+import { consoleLogMiddleware, createStore, type Store } from '$lib/store.svelte.js';
+
+interface CounterState {
+	count: number;
+}
+
+export interface CounterStore extends Store<CounterState> {
+	increment: () => void;
+	decrement: () => void;
+}
+
+const initialState: CounterState = { count: 0 };
+const options = {};
+
+const baseCounterStore = createStore<CounterState>(initialState, options);
+
+export const counterStore: CounterStore = {
+	...baseCounterStore,
+	increment: () => {
+		baseCounterStore.setState((prev) => ({ count: prev.count + 1 }));
+	},
+	decrement: () => {
+		baseCounterStore.setState((prev) => ({ count: prev.count - 1 }));
+	}
+};
 ```
 
-You can preview the production build with `npm run preview`.
+### Using the Store in Svelte Components
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Since the store implements Svelte’s store contract (with a `subscribe` method), you can import and use it directly in your Svelte components:
 
-## Publishing
+```svelte
+<!-- src/components/Counter.svelte -->
+<script lang="ts">
+	import { counterStore } from '../stores/counterStore.svelte';
+</script>
 
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
-
-To publish your library to [npm](https://www.npmjs.com):
-
-```bash
-npm publish
+<main>
+	<h1>Counter: {$counterStore.count}</h1>
+	<button on:click={() => counterStore.increment()}>➕ Increment</button>
+	<button on:click={() => counterStore.decrement()}>➖ Decrement</button>
+</main>
 ```
+
+Svelte will auto‑subscribe to your store and update the component whenever state changes.
+
+### Middleware
+
+This is a work in progress. For the moment, you can log the state everytime there is a change in the store by using the `consoleLogMiddleware`.
+
+```ts
+// src/stores/counterStore.svelte.ts
+import { consoleLogMiddleware, createStore, type Store } from '$lib/store.svelte.js';
+
+interface CounterState {
+	count: number;
+}
+
+export interface CounterStore extends Store<CounterState> {
+	increment: () => void;
+	decrement: () => void;
+}
+
+const initialState: CounterState = { count: 0 };
+const options = { middleware: [consoleLogMiddleware] }; // 🚀 Add the middleware here!
+
+const baseCounterStore = createStore<CounterState>(initialState, options);
+
+export const counterStore: CounterStore = {
+	...baseCounterStore,
+	increment: () => {
+		baseCounterStore.setState((prev) => ({ count: prev.count + 1 }));
+	},
+	decrement: () => {
+		baseCounterStore.setState((prev) => ({ count: prev.count - 1 }));
+	}
+};
+```
+
+## 🔌 API Reference
+
+The main exports from the library are:
+
+### Types:
+
+- Store<T> – the store interface.
+- Middleware<T> – middleware function type.
+- StoreOptions<T> – options for store creation.
+
+### Functions:
+
+- createStore<T>(initialState: T, options?: StoreOptions<T>): Store<T>
+  Creates a reactive store with optional middleware.
+- createSvelteStore<T>(store: Store<T>)
+  Optional: A helper that exposes only the subscribe method (if you prefer to limit your store’s public API).
+- consoleLogMiddleware<T>(prevState: T, nextState: T): void
+  A sample middleware function for logging state changes.

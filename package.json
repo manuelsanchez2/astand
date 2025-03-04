@@ -1,12 +1,14 @@
 {
 	"name": "astand",
-	"version": "0.0.1",
+	"version": "0.0.4",
 	"scripts": {
 		"dev": "vite dev",
+		"dev:open": "vite dev --open",
 		"build": "vite build && npm run prepack",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"prepack": "svelte-kit sync && svelte-package && publint",
+		"publish": "npm publish --access public",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
