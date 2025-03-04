@@ -7,6 +7,7 @@ import {
 
 interface CounterState {
 	count: number;
+	updatedAt?: string;
 }
 
 export interface CounterStore extends Store<CounterState> {

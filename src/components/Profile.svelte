@@ -14,7 +14,7 @@
 	}
 </script>
 
-<div class="mx-auto max-w-lg rounded-lg bg-white p-6 shadow">
+<div class="mx-auto max-w-lg rounded-lg border-2 border-black bg-white p-6 shadow">
 	<!-- Display current profile -->
 	<div class="profile mb-6">
 		<p class="text-xl font-semibold">Current Profile</p>
@@ -40,7 +40,7 @@
 	</div>
 
 	<!-- Accessible form with fieldset and legend -->
-	<fieldset class="rounded border border-gray-300 p-4">
+	<fieldset class="rounded border-2 border-black p-4">
 		<legend class="px-2 text-lg font-bold">Update Your Information</legend>
 		<div class="space-y-4">
 			<div>
@@ -49,7 +49,7 @@
 					id="name"
 					type="text"
 					bind:value={name}
-					class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+					class="mt-1 block w-full rounded-md border-2 border-black px-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
 				/>
 			</div>
 			<div>
@@ -58,7 +58,7 @@
 					id="age"
 					type="number"
 					bind:value={age}
-					class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+					class="mt-1 block w-full rounded-md border-2 border-black px-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
 				/>
 			</div>
 			<div>
@@ -67,7 +67,7 @@
 					id="city"
 					type="text"
 					bind:value={city}
-					class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+					class="mt-1 block w-full rounded-md border-2 border-black px-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
 				/>
 			</div>
 			<div>
@@ -76,7 +76,7 @@
 					id="country"
 					type="text"
 					bind:value={country}
-					class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+					class="mt-1 block w-full rounded-md border-2 border-black px-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
 				/>
 			</div>
 		</div>
