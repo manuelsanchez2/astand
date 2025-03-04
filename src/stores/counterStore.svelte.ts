@@ -2,7 +2,8 @@ import {
 	consoleLogMiddleware,
 	createStore,
 	timestampMiddleware,
-	type Store
+	type Store,
+	type StoreOptions
 } from '$lib/store.svelte.js';
 
 interface CounterState {
@@ -16,7 +17,10 @@ export interface CounterStore extends Store<CounterState> {
 }
 
 const initialState: CounterState = { count: 0 };
-const options = { middleware: [consoleLogMiddleware, timestampMiddleware] };
+const options: StoreOptions<CounterState> = {
+	middleware: [consoleLogMiddleware, timestampMiddleware],
+	persist: { key: 'counterStore', storage: 'local' }
+};
 
 const baseCounterStore = createStore<CounterState>(initialState, options);
 

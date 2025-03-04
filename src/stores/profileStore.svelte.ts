@@ -26,7 +26,7 @@ const baseProfileStore = createStore<ProfileState>(
 			country: 'USA'
 		}
 	},
-	{ middleware: [consoleLogMiddleware] }
+	{ middleware: [consoleLogMiddleware], persist: { key: 'profileStore' } }
 );
 
 export const profileStore: ProfileStore = {

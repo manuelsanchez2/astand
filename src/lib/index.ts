@@ -2,6 +2,7 @@ import {
 	createStore,
 	createSvelteStore,
 	consoleLogMiddleware,
+	timestampMiddleware
 	type Store,
 	type Middleware,
 	type StoreOptions
@@ -9,4 +10,4 @@ import {
 
 // Reexport your stores here
 export type { Store, Middleware, StoreOptions };
-export { createStore, createSvelteStore, consoleLogMiddleware };
+export { createStore, createSvelteStore, consoleLogMiddleware, timestampMiddleware };

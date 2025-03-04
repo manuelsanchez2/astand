@@ -48,6 +48,14 @@ export interface StoreOptions<T> {
 	 * An array of middleware functions to be executed on each state update.
 	 */
 	middleware?: Middleware<T>[];
+	/**
+	 * Persist options: the key to use in storage and the type of storage.
+	 * Defaults to using localStorage.
+	 */
+	persist?: {
+		key: string;
+		storage?: 'local' | 'session';
+	};
 }
 
 /**
@@ -85,10 +93,38 @@ function cloneState<T>(state: T): T {
  * const counterStore = createStore({ count: 0 }, { middleware: [consoleLogMiddleware] });
  */
 export function createStore<T>(initialState: T, options?: StoreOptions<T>): Store<T> {
-	// Wrap the initial state with the Svelte 5 $state rune.
-	let state = $state(initialState);
+	// Determine the initial value (rehydrate if persist is enabled and we're in the browser)
+	let newInitial = initialState;
+	if (options?.persist && typeof window !== 'undefined') {
+		const { key, storage = 'local' } = options.persist;
+		const st = storage === 'local' ? localStorage : sessionStorage;
+		const stored = st.getItem(key);
+		if (stored) {
+			try {
+				newInitial = JSON.parse(stored);
+			} catch (e) {
+				console.error('Failed to parse stored state:', e);
+			}
+		}
+	}
+
+	// Wrap the (possibly rehydrated) initial state with the Svelte 5 $state rune.
+	let state = $state(newInitial);
 	let listeners: Array<(state: T) => void> = [];
-	const middlewares = options?.middleware ?? [];
+	const middlewares = options?.middleware ? [...options.middleware] : [];
+
+	// If persistence is enabled and we're in the browser, add a persist middleware.
+	if (options?.persist && typeof window !== 'undefined') {
+		const { key, storage = 'local' } = options.persist;
+		const st = storage === 'local' ? localStorage : sessionStorage;
+		middlewares.push((prevState, nextState) => {
+			try {
+				st.setItem(key, JSON.stringify(nextState));
+			} catch (e) {
+				console.error('Persist middleware error:', e);
+			}
+		});
+	}
 
 	/**
 	 * Runs middleware functions with the previous and new state.
