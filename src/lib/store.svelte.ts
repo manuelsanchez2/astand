@@ -7,6 +7,8 @@
  * @template T - The type of the state.
  */
 
+import { cloneState } from "./utils/index.js";
+
 export interface Store<T> {
 	/**
 	 * Returns the current reactive state.
@@ -58,27 +60,7 @@ export interface StoreOptions<T> {
 	};
 }
 
-/**
- * Tries to clone the state. First uses structuredClone; if that fails (for reactive proxies),
- * falls back to JSON serialization for simple serializable states.
- *
- * @template T - The type of the state.
- * @param state - The state to clone.
- * @returns A clone of the state.
- */
-function cloneState<T>(state: T): T {
-	try {
-		return structuredClone(state);
-	} catch (e) {
-		// Fallback: use JSON serialization (works only for serializable state)
-		try {
-			return JSON.parse(JSON.stringify(state));
-		} catch (e2) {
-			console.error('Failed to clone state:', e2);
-			throw e2;
-		}
-	}
-}
+
 
 /**
  * Creates a definitive store with middleware support.
@@ -188,28 +170,3 @@ export function createSvelteStore<T>(store: Store<T>) {
 	};
 }
 
-/**
- * Example middleware: logs state changes to the console.
- *
- * @template T - The type of the state.
- * @param prevState - The state before the update.
- * @param nextState - The state after the update.
- */
-export function consoleLogMiddleware<T>(prevState: T, nextState: T): void {
-	console.log('State updated from', cloneState(prevState), 'to', cloneState(nextState));
-}
-
-/**
- * Timestamp middleware.
- *
- * Adds/updates an `updatedAt` property on the state with the current ISO timestamp
- * whenever the state is updated.
- *
- * @template T - The type of the state. (Should be an object.)
- * @param prevState - The state before the update.
- * @param nextState - The state after the update.
- */
-export function timestampMiddleware<T extends object>(prevState: T, nextState: T): void {
-	// We cast to 'any' because we're adding a property that may not exist on T.
-	(nextState as any).updatedAt = new Date().toISOString();
-}

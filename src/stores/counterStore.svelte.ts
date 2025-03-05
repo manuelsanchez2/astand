@@ -1,10 +1,4 @@
-import {
-	consoleLogMiddleware,
-	createStore,
-	timestampMiddleware,
-	type Store,
-	type StoreOptions
-} from '$lib/store.svelte.js';
+import { consoleLogMiddleware, createStore, timestampMiddleware, validationMiddleware, type Store, type StoreOptions } from '$lib/index.js';
 
 interface CounterState {
 	count: number;
@@ -18,7 +12,13 @@ export interface CounterStore extends Store<CounterState> {
 
 const initialState: CounterState = { count: 0 };
 const options: StoreOptions<CounterState> = {
-	middleware: [consoleLogMiddleware, timestampMiddleware],
+	middleware: [consoleLogMiddleware, timestampMiddleware, validationMiddleware([
+		{
+			predicate: (s: CounterState) => s.count >= 0,
+			message: 'Count must be non-negative',
+			level: 'error'
+		}
+	])],
 	persist: { key: 'counterStore', storage: 'local' }
 };
 

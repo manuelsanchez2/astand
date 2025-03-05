@@ -11,9 +11,7 @@ Inspired by the simplicity of Zustand and the power of Svelte’s reactive runes
 - **Reactive Stores:**  
   Utilizes Svelte’s `$state` rune for fine‑grained reactivity.
 - **Middleware Support:**  
-  Easily plug in middleware to run on every state update (e.g. logging with `consoleLogMiddleware`).
-- **Singleton or Context:**  
-  Export your store as a singleton for global state or provide it via Svelte’s context API.
+  Easily plug in middleware to run on every state update (e.g. logging with `consoleLogMiddleware`, validation with `validationMiddleware`, etc.).
 - **Direct Svelte Store Contract:**  
   Implements a `subscribe` method under the hood so you can directly use the store in your Svelte components (no extra wrappers required).
 - **TypeScript First:**  
@@ -138,3 +136,43 @@ The main exports from the library are:
   Optional: A helper that exposes only the subscribe method (if you prefer to limit your store’s public API).
 - consoleLogMiddleware<T>(prevState: T, nextState: T): void
   A sample middleware function for logging state changes.
+- timestampMiddleware<T extends object>(prevState: T, nextState: T): void
+  Adds/updates an updatedAt property on the state with the current ISO timestamp whenever the state is updated.
+- validationMiddleware<T>(conditions: ValidationCondition<T>[]): Middleware<T>
+  Checks one or more conditions on the new state and either logs, warns, or throws an error if a condition isn’t met.
+
+```ts
+type ValidationCondition<T> = {
+  predicate: (state: T) => boolean;
+  message: string;
+  level?: 'log' | 'warn' | 'error';
+};
+```
+
+- Persist Options: The persist option in StoreOptions<T> allows you to specify a key and an optional storage type ('local' or 'session') to automatically rehydrate and save state between page loads.
+
+```ts
+const options = {
+  persist: { key: 'counterStore', storage: 'local' }
+};
+```
+
+#### Example of a combination of persist and middlewares
+
+
+```ts
+const options = {
+  middleware: [
+	consoleLogMiddleware,
+    validationMiddleware([
+      {
+        predicate: (s: { count: number }) => s.count >= 0,
+        message: 'Count must be non-negative',
+        level: 'error'
+      }
+    ])
+  ],
+  persist: { key: 'testMiddlewareStore', storage: 'local' }
+};
+const store = createStore({ count: 0 }, options);
+```

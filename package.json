@@ -1,6 +1,6 @@
 {
 	"name": "astand",
-	"version": "0.0.4",
+	"version": "0.0.6",
 	"scripts": {
 		"dev": "vite dev",
 		"dev:open": "vite dev --open",

@@ -1,4 +1,4 @@
-import { consoleLogMiddleware, createStore, type Store } from '$lib/store.svelte.js';
+import { consoleLogMiddleware, createStore, type Store } from '$lib/index.js';
 
 interface Address {
 	city: string;
