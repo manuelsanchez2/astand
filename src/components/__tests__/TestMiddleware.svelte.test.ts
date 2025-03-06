@@ -88,4 +88,5 @@ it('saves updated state to localStorage and shows updatedAt', async () => {
     });
     expect(consoleSpy).toHaveBeenCalledOnce();
   });
+  
 });

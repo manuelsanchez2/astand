@@ -5,7 +5,8 @@ import {
 	timestampMiddleware,
 	validationMiddleware,
 	type Store,
-	type StoreOptions
+	type StoreOptions,
+	debugMiddleware
   } from '$lib/index.js';
   
   interface TestMiddlewareState {
@@ -25,6 +26,10 @@ import {
 	middleware: [
 	  consoleLogMiddleware,
 	  timestampMiddleware,
+	  debugMiddleware(
+		(prev) => console.log('Before change:', prev),
+		(next) => console.log('After change:', next)
+	  ),
 	  // Validation: count must be >= 0.
 	  validationMiddleware<TestMiddlewareState>([
 		{

@@ -17,11 +17,11 @@
 		<p class="max-w-[200px] text-sm text-gray-500">This counter has not been updated yet.</p>
 	{/if}
 	<button
-		class="mt-4 w-full rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+		class="btn"
 		on:click={increment}>Increment</button
 	>
 	<button
-		class="mt-4 w-full rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+		class="btn"
 		on:click={decrement}>Decrement</button
 	>
 </div>

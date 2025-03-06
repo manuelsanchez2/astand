@@ -1,4 +1,4 @@
-import { consoleLogMiddleware, createStore, timestampMiddleware, validationMiddleware, type Store, type StoreOptions } from '$lib/index.js';
+import { consoleLogMiddleware, createStore, debugMiddleware, timestampMiddleware, validationMiddleware, type Store, type StoreOptions } from '$lib/index.js';
 
 interface CounterState {
 	count: number;
@@ -18,7 +18,11 @@ const options: StoreOptions<CounterState> = {
 			message: 'Count must be non-negative',
 			level: 'error'
 		}
-	])],
+	]),
+		debugMiddleware(
+			(prev) => console.log('Before change:', prev),
+			(next) => console.log('After change:', next)
+		),],
 	persist: { key: 'counterStore', storage: 'local' }
 };
 

@@ -132,6 +132,10 @@ The main exports from the library are:
 
 - createStore<T>(initialState: T, options?: StoreOptions<T>): Store<T>
   Creates a reactive store with optional middleware.
+- combineStores<T>(stores: Record<string, { subscribe: (run: (value: any) => void) => () => void } & Record<string, any>>): CombinedStore<T>  
+  Combines multiple Svelte stores into a single derived store. The returned object has:
+  - A `subscribe` method that yields an object with each key’s current state.
+  - All the original store objects (with their methods), so you can call, for example, `combinedStore.counter.increment()`.
 - createSvelteStore<T>(store: Store<T>)
   Optional: A helper that exposes only the subscribe method (if you prefer to limit your store’s public API).
 - consoleLogMiddleware<T>(prevState: T, nextState: T): void

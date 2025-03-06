@@ -7,6 +7,7 @@
  * @template T - The type of the state.
  */
 
+import { derived } from "svelte/store";
 import { cloneState } from "./utils/index.js";
 
 export interface Store<T> {
@@ -170,3 +171,64 @@ export function createSvelteStore<T>(store: Store<T>) {
 	};
 }
 
+
+/**
+ * Type representing the combined state of an object of stores.
+ */
+export type CombinedState<T extends Record<string, { subscribe: (run: (value: any) => void) => () => void }>> = {
+	[K in keyof T]: T[K] extends { subscribe: (run: (value: infer S) => () => void) => () => void }
+		? S
+		: never;
+};
+
+/**
+ * CombinedStore is the type for the object returned by combineStores.
+ * It contains all the original store objects and a subscribe method which yields a combined state.
+ */
+export type CombinedStore<T extends Record<string, { subscribe: (run: (value: any) => void) => () => void }>> =
+	T & {
+		subscribe: (run: (state: CombinedState<T>) => void) => () => void;
+	};
+
+/**
+ * Combines multiple Svelte stores into one object.
+ *
+ * The returned object has all the properties of the original stores,
+ * plus a subscribe method (from a derived store) that yields an object with
+ * each key's current state.
+ *
+ * @param stores - An object mapping keys to Svelte stores.
+ * @returns A combined store that can be used as a Svelte store and whose individual methods remain accessible.
+ *
+ * @example
+ * import { counterStore } from './counterStore.svelte';
+ * import { greeterStore } from './greeterStore.svelte';
+ *
+ * export const combinedStore = combineStores({
+ *   counter: counterStore,
+ *   greeter: greeterStore
+ * });
+ *
+ * // In a component:
+ * // Reading state:
+ * //   {$combinedStore} might yield { counter: { count: 42, ... }, greeter: { name: 'Alice', ... } }
+ * // Calling methods:
+ * //   combinedStore.counter.increment();
+ */
+export function combineStores<
+  T extends Record<string, { subscribe: (run: (value: any) => void) => () => void } & Record<string, any>>
+>(stores: T): CombinedStore<T> {
+  const keys = Object.keys(stores) as (keyof T)[];
+  const combinedState = derived(
+    keys.map((key) => stores[key]),
+    (values) => {
+      const combined: Partial<CombinedState<T>> = {};
+      keys.forEach((key, i) => {
+        // Explicitly cast each value to the expected type.
+        (combined as CombinedState<T>)[key] = values[i] as CombinedState<T>[typeof key];
+      });
+      return combined as CombinedState<T>;
+    }
+  );
+  return Object.assign({}, stores, { subscribe: combinedState.subscribe });
+}
