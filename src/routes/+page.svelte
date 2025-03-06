@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Counter from '../components/Counter.svelte';
+	import AstandDebugSection from '../components/AstandDebugSection.svelte';
+import Counter from '../components/Counter.svelte';
 	import GithubCorner from '../components/GithubCorner.svelte';
 	import Greeter from '../components/Greeter.svelte';
 	import Profile from '../components/Profile.svelte';
@@ -8,6 +9,8 @@
 
 <main class="flex min-h-screen flex-col items-center justify-center">
 	<GithubCorner />
+
+	<AstandDebugSection />
 
 	<h1 class="text-4xl font-bold">Astand Playground</h1>
 

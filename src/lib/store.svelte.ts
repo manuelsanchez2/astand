@@ -34,6 +34,12 @@ export interface Store<T> {
 	subscribe: (listener: (state: T) => void) => () => void;
 }
 
+export interface DebugStore {
+	name: string;
+	store: { subscribe: (run: (value: any) => void) => () => void };
+	actions?: Record<string, (...args: any[]) => any>;
+}
+
 /**
  * A middleware function that runs after a state update.
  *
@@ -177,8 +183,8 @@ export function createSvelteStore<T>(store: Store<T>) {
  */
 export type CombinedState<T extends Record<string, { subscribe: (run: (value: any) => void) => () => void }>> = {
 	[K in keyof T]: T[K] extends { subscribe: (run: (value: infer S) => () => void) => () => void }
-		? S
-		: never;
+	? S
+	: never;
 };
 
 /**
@@ -216,19 +222,19 @@ export type CombinedStore<T extends Record<string, { subscribe: (run: (value: an
  * //   combinedStore.counter.increment();
  */
 export function combineStores<
-  T extends Record<string, { subscribe: (run: (value: any) => void) => () => void } & Record<string, any>>
+	T extends Record<string, { subscribe: (run: (value: any) => void) => () => void } & Record<string, any>>
 >(stores: T): CombinedStore<T> {
-  const keys = Object.keys(stores) as (keyof T)[];
-  const combinedState = derived(
-    keys.map((key) => stores[key]),
-    (values) => {
-      const combined: Partial<CombinedState<T>> = {};
-      keys.forEach((key, i) => {
-        // Explicitly cast each value to the expected type.
-        (combined as CombinedState<T>)[key] = values[i] as CombinedState<T>[typeof key];
-      });
-      return combined as CombinedState<T>;
-    }
-  );
-  return Object.assign({}, stores, { subscribe: combinedState.subscribe });
+	const keys = Object.keys(stores) as (keyof T)[];
+	const combinedState = derived(
+		keys.map((key) => stores[key]),
+		(values) => {
+			const combined: Partial<CombinedState<T>> = {};
+			keys.forEach((key, i) => {
+				// Explicitly cast each value to the expected type.
+				(combined as CombinedState<T>)[key] = values[i] as CombinedState<T>[typeof key];
+			});
+			return combined as CombinedState<T>;
+		}
+	);
+	return Object.assign({}, stores, { subscribe: combinedState.subscribe });
 }
